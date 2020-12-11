@@ -10,6 +10,20 @@ const welcome = () =>
     import ('../components/welcome')
 const users = () =>
     import ('../components/users/users')
+const power = () =>
+    import ('../components/power/power')
+const roles = () =>
+    import ('../components/power/roles')
+const goods = () =>
+    import ('../components/shop/goods')
+const params = () =>
+    import ('../components/shop/params')
+const categories = () =>
+    import ('../components/shop/categories')
+const orders = () =>
+    import ('../components/orders/orders')
+const reports = () =>
+    import ('../components/reports/reports')
 
 Vue.use(VueRouter)
 
@@ -35,6 +49,34 @@ const routes = [{
             {
                 path: '/users',
                 component: users
+            },
+            {
+                path: '/rights',
+                component: power
+            },
+            {
+                path: '/roles',
+                component: roles
+            },
+            {
+                path: '/goods',
+                component: goods
+            },
+            {
+                path: '/params',
+                component: params
+            },
+            {
+                path: '/categories',
+                component: categories
+            },
+            {
+                path: '/orders',
+                component: orders
+            },
+            {
+                path: '/reports',
+                component: reports
             }
         ]
     }

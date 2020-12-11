@@ -49,34 +49,18 @@
         </el-table-column>
         <el-table-column label="操作" width="180px">
           <template v-slot="scope">
-            <el-tooltip
-              class="item"
-              effect="dark"
-              content="修改信息"
-              placement="top"
-              :enterable="false"
-            >
-              <el-button
-                type="primary"
-                icon="el-icon-edit"
-                size="mini"
-                @click="showmes(scope.row.id)"
-              ></el-button>
-            </el-tooltip>
-            <el-tooltip
-              class="item"
-              effect="dark"
-              content="删除"
-              placement="top"
-              :enterable="false"
-            >
-              <el-button
-                type="danger"
-                icon="el-icon-delete"
-                size="mini"
-                @click="openwarn(scope.row.id)"
-              ></el-button>
-            </el-tooltip>
+            <el-button
+              type="primary"
+              icon="el-icon-edit"
+              size="mini"
+              @click="showmes(scope.row.id)"
+            ></el-button>
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="mini"
+              @click="openwarn(scope.row.id)"
+            ></el-button>
             <el-tooltip
               class="item"
               effect="dark"
@@ -88,6 +72,7 @@
                 type="warning"
                 icon="el-icon-share"
                 size="mini"
+                @click="distrib(scope.row)"
               ></el-button>
             </el-tooltip>
           </template>
@@ -161,6 +146,33 @@
         <el-button type="primary" @click="edituser">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      title="分配角色"
+      :visible.sync="rolesvis"
+      width="50%"
+      @close="setclose"
+    >
+      <div>
+        <p>当前用户：{{ roles.username }}</p>
+        <p>当前角色：{{ roles.role_name }}</p>
+        <p>
+          分配角色：
+          <el-select v-model="selectroles" placeholder="请选择">
+            <el-option
+              v-for="item in rolelist"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id"
+            >
+            </el-option>
+          </el-select>
+        </p>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="rolesvis = false">取 消</el-button>
+        <el-button type="primary" @click="changeroles">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -226,7 +238,11 @@ export default {
           { required: true, message: '请输入电话号码', trigger: 'blur' },
           { validator: this.checkmobile, trigger: 'blur' }
         ]
-      }
+      },
+      rolesvis: false,
+      roles: {},
+      rolelist: [],
+      selectroles: ''
     };
   },
   created () {
@@ -243,7 +259,7 @@ export default {
         params: this.userslist
       })
       if (res.meta.status !== 200) {
-        return this.$message.error('获取失败！')
+        return this.$message.error('获取用户失败！')
       }
       this.users = res.data.users
       this.total = res.data.total
@@ -336,6 +352,32 @@ export default {
       }
       this.$message.success('删除用户成功')
       this.getusers()
+    },
+    async distrib (roles) {
+      this.roles = roles
+      const { data: res } = await this.$http.get('roles')
+      if (res.meta.status != 200) {
+        this.$message.error('获取角色列表失败')
+      }
+      this.rolelist = res.data
+      this.rolesvis = true
+      //console.log(this.rolelist)
+    },
+    async changeroles () {
+      if (!this.selectroles) {
+        return this.$message.error('请选择要改的角色')
+      }
+      const { data: res } = await this.$http.put(`users/${this.roles.id}/role`, { rid: this.selectroles })
+      if (res.meta.status !== 200) {
+        return this.$message.error('更新角色失败')
+      }
+      this.$message.success('更新角色成功')
+      this.getusers()
+      this.rolesvis = false
+    },
+    setclose () {
+      this.roles = {}
+      this.selectroles = ''
     }
   }
 }
