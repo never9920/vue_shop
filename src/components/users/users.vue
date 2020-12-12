@@ -364,10 +364,12 @@ export default {
       //console.log(this.rolelist)
     },
     async changeroles () {
+      //console.log(this.selectroles)
       if (!this.selectroles) {
         return this.$message.error('请选择要改的角色')
       }
       const { data: res } = await this.$http.put(`users/${this.roles.id}/role`, { rid: this.selectroles })
+      //console.log(res)
       if (res.meta.status !== 200) {
         return this.$message.error('更新角色失败')
       }
