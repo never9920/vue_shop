@@ -10,10 +10,8 @@
     <el-container>
       <el-aside :width="isclose ? '64px' : '200px'">
         <div class="asidebtn" @click="closemenu">|||</div>
-        <!--:default-active="apath"
-              @click="change('/' + subitem.path)"-->
+        <!--:default-active="$route.path"-->
         <el-menu
-          :default-active="$route.path"
           class="el-menu-vertical-demo"
           background-color="#333744"
           text-color="#fff"
@@ -22,6 +20,8 @@
           :collapse="isclose"
           :collapse-transition="false"
           router
+          :default-active="apath"
+          @click="change('/' + subitem.path)"
         >
           <el-submenu
             :index="index + ''"
@@ -71,7 +71,7 @@ export default {
   },
   created () {
     this.getmenulist()
-    //this.apath = window.sessionStorage.getItem('apath')
+    this.apath = window.sessionStorage.getItem('apath')
   },
 
   components: {},
@@ -92,10 +92,10 @@ export default {
     closemenu () {
       this.isclose = !this.isclose
     },
-    /*change (value) {
+    change (value) {
       window.sessionStorage.setItem('apath', value),
         this.apath = value
-    }*/
+    }
   }
 }
 

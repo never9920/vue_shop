@@ -58,7 +58,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
         :current-page="queryinfo.pagenum"
-        :page-sizes="[3, 5, 10]"
+        :page-sizes="[3, 5, 10, 20]"
         :page-size="queryinfo.pagesize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"

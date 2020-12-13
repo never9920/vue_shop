@@ -20,6 +20,8 @@ const params = () =>
     import ('../components/shop/params')
 const categories = () =>
     import ('../components/shop/categories')
+const add = () =>
+    import ('../components/shop/add')
 const orders = () =>
     import ('../components/orders/orders')
 const reports = () =>
@@ -61,6 +63,10 @@ const routes = [{
             {
                 path: '/goods',
                 component: goods
+            },
+            {
+                path: '/goods/add',
+                component: add
             },
             {
                 path: '/params',
