@@ -275,7 +275,7 @@ export default {
     async selectparams () {
       //console.log(this.selected)
       //console.log(this.selected)
-      console.log(typeof (this.selected))
+      //console.log(typeof (this.selected))
       this.getparamslist()
     },
     handleClick () {

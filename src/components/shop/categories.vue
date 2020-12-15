@@ -36,20 +36,31 @@
             size="mini"
             type="danger"
             v-else-if="scope.row.cat_level === 1"
-            >二级</el-tag
-          >
+            >二级
+          </el-tag>
           <el-tag
             size="mini"
             type="warning"
             v-else-if="scope.row.cat_level === 2"
-            >三级</el-tag
           >
+            三级
+          </el-tag>
         </template>
-        <template slot="opt">
-          <el-button type="primary" icon="el-icon-edit" size="mini">
+        <template slot="opt" slot-scope="scope">
+          <el-button
+            type="primary"
+            icon="el-icon-edit"
+            size="mini"
+            @click="editcate(scope.row)"
+          >
             编辑
           </el-button>
-          <el-button type="danger" icon="el-icon-delete" size="mini">
+          <el-button
+            type="danger"
+            icon="el-icon-delete"
+            size="mini"
+            @click="deletecate(scope.row)"
+          >
             删除
           </el-button>
         </template>
@@ -65,6 +76,7 @@
       >
       </el-pagination>
     </el-card>
+
     <el-dialog
       title="添加分类"
       :visible.sync="addcart"
@@ -93,6 +105,28 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="addcart = false">取 消</el-button>
         <el-button type="primary" @click="addcartlist">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog
+      title="添加分类"
+      :visible.sync="editcart"
+      width="50%"
+      @close="editclose"
+    >
+      <el-form
+        ref="editcartref"
+        :model="editcartform"
+        label-width="100px"
+        :rules="addcartrules"
+      >
+        <el-form-item label="分类名称：" prop="cat_name">
+          <el-input v-model="editcartform.cat_name"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editcart = false">取 消</el-button>
+        <el-button type="primary" @click="editcartlist">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -151,7 +185,9 @@ export default {
         label: 'cat_name',
         children: 'children',
         checkStrictly: 'true'
-      }
+      },
+      editcart: false,
+      editcartform: {}
     }
   },
   created () {
@@ -220,6 +256,47 @@ export default {
         this.addcartform.cat_pid = 0
         this.addcartform.cat_level = 0
       }
+    },
+    editclose () {
+      this.$refs.editcartref.resetFields()
+    },
+    async editcate (item) {
+      //this.editcart = true
+      //console.log(item)
+      const { data: res } = await this.$http.get(`categories/` + item.cat_id)
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取分类名称失败')
+      }
+      this.editcartform = res.data
+      this.editcart = true
+    },
+    editcartlist () {
+      this.$refs.editcartref.validate(async valid => {
+        if (!valid) return
+        const { data: res } = await this.$http.put(`categories/` + this.editcartform.cat_id, this.editcartform)
+        if (res.meta.status !== 200) {
+          return this.$message.error('修改分类名称失败')
+        }
+        this.$message.success('修改分类名称成功')
+        this.editcart = false
+        this.getcategories()
+      })
+    },
+    async deletecate (item) {
+      const confirmres = await this.$confirm('此操作将永久删除该分类, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+      if (confirmres !== 'confirm') {
+        return this.$message.info('已取消删除')
+      }
+      const { data: res } = await this.$http.delete('categories/' + item.cat_id)
+      if (res.meta.status !== 200) {
+        return this.$message.error('删除分类失败');
+      }
+      this.$message.success('删除分类成功')
+      this.getcategories()
     }
   }
 }

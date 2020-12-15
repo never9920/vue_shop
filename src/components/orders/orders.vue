@@ -48,13 +48,13 @@
               type="primary"
               icon="el-icon-edit"
               size="mini"
-              @click="changevis = true"
+              @click="showedit(scope.row.order_id)"
             ></el-button>
             <el-button
               type="success"
               icon="el-icon-location"
               size="mini"
-              @click="showlocation(scope.row.id)"
+              @click="showlocation(scope.row.order_id)"
             ></el-button>
           </template>
         </el-table-column>
@@ -71,13 +71,35 @@
       </el-pagination>
     </el-card>
     <el-dialog
-      title="修改地址"
+      title="修改订单信息"
       :visible.sync="changevis"
       width="50%"
       @close="changeclose"
     >
       <el-form
-        ref="changeref"
+        ref="editorref"
+        :model="editorders"
+        label-width="100px"
+        :rules="editrules"
+      >
+        <el-form-item label="订单编号">
+          <el-input v-model="editorders.order_number" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="是否付款" prop="pay_status">
+          <el-cascader
+            :options="statuspay"
+            v-model="editorders.pay_status"
+          ></el-cascader>
+        </el-form-item>
+        <el-form-item label="是否发货" prop="is_send">
+          <el-cascader
+            :options="sended"
+            v-model="editorders.is_send"
+          ></el-cascader>
+        </el-form-item>
+      </el-form>
+      <el-form
+        ref="editorref"
         :model="changeform"
         label-width="100px"
         :rules="changerules"
@@ -94,7 +116,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="changevis = false">取 消</el-button>
-        <el-button type="primary" @click="changevis = false">确 定</el-button>
+        <el-button type="primary" @click="editfinish">确 定</el-button>
       </span>
     </el-dialog>
     <el-dialog
@@ -119,6 +141,7 @@
 </template>
 
 <script>
+import _ from 'lodash'
 import citydata from './citydata'
 export default {
   name: "orders",
@@ -142,7 +165,30 @@ export default {
       },
       citydata,
       locationvis: false,
-      locationlist: []
+      locationlist: [],
+      editorders: {},
+      editrules: {
+        pay_status: [{ required: true, message: '请选择是否付款', trigger: 'blur', type: "array" }],
+        is_send: [{ required: true, message: '请选择是否发货', trigger: 'blur', type: "array" }],
+      },
+      statuspay: [
+        {
+          value: '0',
+          label: '未付款'
+        }, {
+          value: '1',
+          label: '已付款',
+        }
+      ],
+      sended: [
+        {
+          value: '否',
+          label: '未发货'
+        }, {
+          value: '是',
+          label: '已经发货',
+        }
+      ]
     };
   },
   created () {
@@ -154,7 +200,7 @@ export default {
 
   methods: {
     async getorders () {
-      console.log(this.orders)
+      //console.log(this.orders)
       const { data: res } = await this.$http.get(`orders`, { params: this.orders })
       if (res.meta.status !== 200) {
         return this.$message.error('获取订单列表失败');
@@ -172,21 +218,52 @@ export default {
       this.getorders()
     },
     changeclose () {
-      this.$refs.changeref.resetFields()
+      this.$refs.editorref.resetFields()
     },
     async showlocation (id) {
       this.locationvis = true
-      const { data: res } = await this.$http.get(`/kuaidi/804909574412544580`)
+      const { data: res } = await this.$http.get(`/kuaidi/` + id)
       if (res.meta.status !== 200) {
         return this.$message.error('获取物流信息失败')
       }
       this.locationlist = res.data
-      console.log(res.data)
+      //console.log(res.data)
+      //804909574412544580
     },
     locationclose () {
-      this.$refs.locationref.resetFields()
+      //this.$refs.locationref.resetFields()
       this.locationlist = []
     },
+    editfinish () {
+      this.$refs.editorref.validate(async valid => {
+        if (!valid) return this.$message.error('请填写必要信息')
+        const form = _.cloneDeep(this.editorders)
+        if (typeof (form.pay_status) === 'object') {
+          form.pay_status = form.pay_status.join(),
+            form.is_send = form.is_send.join()
+        }
+        const { data: res } = await this.$http.put(`orders/` + form.order_id, form)
+        if (res.meta.status !== 201) {
+          return this.$message.error('修改订单信息失败')
+        }
+        this.changevis = false
+        this.$message.success('修改订单信息成功')
+        //console.log(form.is_send, typeof (form.is_send))
+        //console.log(form.pay_status, typeof (form.pay_status))
+      })
+    },
+    async showedit (id) {
+      //console.log(id)
+      const { data: res } = await this.$http.get(`orders/` + id)
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取订单信息失败')
+      }
+      this.changevis = true
+      this.editorders = res.data
+      //console.log(this.editorders)
+      //console.log(this.editorders.is_send, typeof (this.editorders.is_send))
+      //console.log(this.editorders.pay_status, typeof (this.editorders.pay_status))
+    }
   }
 }
 

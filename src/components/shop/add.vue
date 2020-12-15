@@ -40,13 +40,22 @@
               <el-input v-model="addform.goods_name"></el-input>
             </el-form-item>
             <el-form-item label="商品价格" prop="goods_price">
-              <el-input v-model="addform.goods_price" type="number"></el-input>
+              <el-input
+                v-model.number="addform.goods_price"
+                autocomplete="off"
+              ></el-input>
             </el-form-item>
             <el-form-item label="商品重量" prop="goods_weight">
-              <el-input v-model="addform.goods_weight" type="number"></el-input>
+              <el-input
+                v-model.number="addform.goods_weight"
+                autocomplete="off"
+              ></el-input>
             </el-form-item>
             <el-form-item label="商品数量" prop="goods_number">
-              <el-input v-model="addform.goods_number" type="number"></el-input>
+              <el-input
+                v-model.number="addform.goods_number"
+                autocomplete="off"
+              ></el-input>
             </el-form-item>
             <el-form-item label="商品分类" prop="goods_cat">
               <el-cascader
@@ -98,9 +107,9 @@
           </el-tab-pane>
           <el-tab-pane label="商品内容" name="4">
             <quill-editor v-model="addform.goods_introduce"></quill-editor>
-            <el-button type="primary" class="btns" @click="finish"
-              >添加商品</el-button
-            >
+            <el-button type="primary" class="btns" @click="finish">
+              添加商品
+            </el-button>
           </el-tab-pane>
         </el-tabs>
       </el-form>
@@ -130,9 +139,9 @@ export default {
       },
       addrules: {
         goods_name: [{ required: true, message: '请输入商品名称', triggerr: 'blur' }],
-        goods_price: [{ required: true, message: '请输入商品价格', triggerr: 'blur' }],
-        goods_weight: [{ required: true, message: '请输入商品重量', triggerr: 'blur' }],
-        goods_number: [{ required: true, message: '请输入商品数量', triggerr: 'blur' }],
+        goods_price: [{ required: true, message: '请输入商品价格', triggerr: 'blur', type: 'number' }],
+        goods_weight: [{ required: true, message: '请输入商品重量', triggerr: 'blur', type: 'number' }],
+        goods_number: [{ required: true, message: '请输入商品数量', triggerr: 'blur', type: 'number' }],
         goods_cat: [{ required: true, message: '请选择商品分类', triggerr: 'blur', type: 'array' }]
       },
       cartlist: [],
@@ -232,7 +241,7 @@ export default {
         x.pic === filepath
       })
       this.addform.pics.splice(i, 1)
-      console.log(this.addform)
+      //console.log(this.addform)
     },
     successful (response) {
       //console.log(response)
@@ -253,7 +262,8 @@ export default {
           const newonly = { attr_id: item.attr_id, attr_value: item.attr_vals }
           form.attrs.push(newonly)
         })
-        //console.log(form)
+        /*form.goods_introduce = form.goods_introduce.Substring(0, form.goods_introduce.Length - 4)*/
+        console.log(form)
         const { data: res } = await this.$http.post(`goods`, form)
         if (res.meta.status !== 201) {
           return this.$message.error('提交失败')

@@ -8,7 +8,9 @@
     <el-card>
       <el-row>
         <el-col>
-          <el-button type="primary">添加角色</el-button>
+          <el-button type="primary" @click="addrolevis = true">
+            添加角色
+          </el-button>
         </el-col>
       </el-row>
       <el-table :data="roles" border style="width: 100%" stripe>
@@ -62,10 +64,20 @@
         <el-table-column label="角色描述" prop="roleDesc"> </el-table-column>
         <el-table-column label="操作" width="300px">
           <template v-slot="scope">
-            <el-button type="primary" icon="el-icon-edit" size="mini">
-              搜索
+            <el-button
+              type="primary"
+              icon="el-icon-edit"
+              size="mini"
+              @click="editroles(scope.row)"
+            >
+              编辑
             </el-button>
-            <el-button type="danger" icon="el-icon-delete" size="mini">
+            <el-button
+              type="danger"
+              icon="el-icon-delete"
+              size="mini"
+              @click="deleteroles(scope.row)"
+            >
               删除
             </el-button>
             <el-button
@@ -101,6 +113,54 @@
         <el-button type="primary" @click="addrights">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      title="添加角色"
+      :visible.sync="addrolevis"
+      width="70%"
+      @close="rolereset"
+    >
+      <el-form
+        ref="roleref"
+        label-width="80px"
+        :model="rolesform"
+        :rules="rolesrules"
+      >
+        <el-form-item label="角色名称" prop="roleName">
+          <el-input v-model="rolesform.roleName"></el-input>
+        </el-form-item>
+        <el-form-item label="角色描述">
+          <el-input v-model="rolesform.roleDesc"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addrolevis = false">取 消</el-button>
+        <el-button type="primary" @click="checkroles">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+      title="修改角色数据"
+      :visible.sync="editrolevis"
+      width="70%"
+      @close="editrolereset"
+    >
+      <el-form
+        ref="editrolesref"
+        label-width="80px"
+        :model="rolesdata"
+        :rules="rolesrules"
+      >
+        <el-form-item label="角色名称" prop="roleName">
+          <el-input v-model="rolesdata.roleName"></el-input>
+        </el-form-item>
+        <el-form-item label="角色描述">
+          <el-input v-model="rolesdata.roleDesc"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editrolevis = false">取 消</el-button>
+        <el-button type="primary" @click="editrolesfinish">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -117,7 +177,17 @@ export default {
         children: 'children'
       },
       defselect: [],
-      roleid: ''
+      roleid: '',
+      rolesform: {
+        roleName: '',
+        roleDesc: ''
+      },
+      addrolevis: false,
+      rolesrules: {
+        roleName: [{ required: true, message: '请输入角色名称', trigger: 'blur' }],
+      },
+      rolesdata: {},
+      editrolevis: false
     }
   },
   created () {
@@ -166,6 +236,7 @@ export default {
       //console.log(this.rights)
       this.getrights(role, this.defselect)
       this.rightsvis = true
+      //console.log(this.roleid)
     },
     getrights (node, arr) {
       if (!node.children) {
@@ -192,6 +263,82 @@ export default {
       this.$message.success('更改成功')
       this.getroles()
       this.rightsvis = false
+    },
+    rolereset () {
+      this.$refs.roleref.resetFields()
+      this.rolesform.roleName = ''
+      this.rolesform.roleDesc = ''
+    },
+    /*async checkroles () {
+      const { data: res } = await this.$http.post(`roles`, this.rolesform)
+      if (res.meta.status !== 201) {
+        return this.$message.error('添加角色失败')
+      }
+      this.$message.success('添加角色成功')
+      this.addrolevis = false
+      this.getroles()
+    }*/
+    checkroles () {
+      this.$refs.roleref.validate(async valid => {
+        if (!valid) return
+        const { data: res } = await this.$http.post(`roles`, this.rolesform)
+        if (res.meta.status !== 201) {
+          this.$message.error('添加失败')
+        }
+        this.$message.success('添加用户成功')
+        this.addrolevis = false
+        this.getroles()
+      })
+    },
+    async editroles (item) {
+      //this.editrolevis = true
+      this.roleid = item.id
+      const { data: res } = await this.$http.get('roles/' + this.roleid)
+      //console.log(res)
+      if (res.meta.status !== 200) {
+        return this.$message.error('获取角色失败');
+      }
+      this.rolesdata = res.data
+      //console.log(this.rights)
+      this.editrolevis = true
+      //console.log(this.rolesdata, this.roleid)
+    },
+    editrolereset () {
+      this.$refs.editrolesref.resetFields()
+    },
+    editrolesfinish () {
+      this.$refs.editrolesref.validate(async valid => {
+        if (!valid) return
+        //console.log(this.rolesdata)
+        const { data: res } = await this.$http.put('roles/' + this.rolesdata.roleId, {
+          roleName: this.rolesdata.roleName,
+          roleDesc: this.rolesdata.roleDesc
+        })
+        //console.log(res)
+        if (res.meta.status !== 200) {
+          return this.$message.error('修改角色失败');
+        }
+        this.$message.success('修改角色成功')
+        this.editrolevis = false
+        this.getroles()
+      })
+    },
+    async deleteroles (item) {
+      //console.log(item)
+      const confirmres = await this.$confirm('此操作将永久删除该角色, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+      if (confirmres !== 'confirm') {
+        return this.$message.info('已取消删除')
+      }
+      const { data: res } = await this.$http.delete('roles/' + item.id)
+      if (res.meta.status !== 200) {
+        return this.$message.error('删除角色失败');
+      }
+      this.$message.success('删除角色成功')
+      this.getroles()
     }
   }
 }

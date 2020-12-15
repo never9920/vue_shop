@@ -30,12 +30,9 @@
       <el-table :data="users" border style="width: 100%" stripe>
         <el-table-column type="index" label="序号" width="80px">
         </el-table-column>
-        <el-table-column prop="username" label="姓名" width="130px">
-        </el-table-column>
-        <el-table-column prop="email" label="邮箱" width="180px">
-        </el-table-column>
-        <el-table-column prop="mobile" label="电话" width="180px">
-        </el-table-column>
+        <el-table-column prop="username" label="姓名"> </el-table-column>
+        <el-table-column prop="email" label="邮箱"> </el-table-column>
+        <el-table-column prop="mobile" label="电话"> </el-table-column>
         <el-table-column prop="role_name" label="角色"> </el-table-column>
         <el-table-column label="状态">
           <template v-slot="scope">
@@ -316,6 +313,7 @@ export default {
       if (res.meta.status !== 200) {
         return this.$message.error('查询失败')
       }
+      //console.log(res.data)
       this.editform = res.data
       this.editvis = true
     },
@@ -324,7 +322,7 @@ export default {
     },
     edituser () {
       this.$refs.editref.validate(async valid => {
-        if (!valid) return
+        if (!valid) return this.$message.error('请填写需要修改的数据')
         const { data: res } = await this.$http.put('users/' + this.editform.id, {
           email: this.editform.email,
           mobile: this.editform.mobile
@@ -373,6 +371,7 @@ export default {
       if (res.meta.status !== 200) {
         return this.$message.error('更新角色失败')
       }
+      //console.log(res.data)
       this.$message.success('更新角色成功')
       this.getusers()
       this.rolesvis = false
