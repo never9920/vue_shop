@@ -53,6 +53,7 @@
 </template>
 
 <script>
+import { getmenus } from '../network/menus'
 export default {
   name: 'home',
   data () {
@@ -84,7 +85,8 @@ export default {
       this.$router.push('/login')
     },
     async getmenulist () {
-      const { data: res } = await this.$http.get('menus')
+      const res = await getmenus()
+      //console.log(res)
       if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
       this.menulist = res.data
       //console.log(res)

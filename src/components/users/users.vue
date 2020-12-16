@@ -174,6 +174,7 @@
 </template>
 
 <script>
+import { usersput } from '../../network/users'
 export default {
   name: "users",
   data () {
@@ -272,7 +273,7 @@ export default {
     },
     async userstatus (value) {
       //console.log(value)
-      const { data: res } = await this.$http.put(`users/${value.id}/state/${value.mg_state}`)
+      const res = await usersput(value.id, value.mg_state)
       if (res.meta.status !== 200) {
         value.mg_state = !value.mg_state
         return this.$message.error('更新失败')

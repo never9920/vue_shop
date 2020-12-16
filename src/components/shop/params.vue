@@ -21,6 +21,7 @@
             :options="paramslist"
             :props="paramsprop"
             @change="selectparams"
+            clearable
           ></el-cascader>
         </el-col>
       </el-row>

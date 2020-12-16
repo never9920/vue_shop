@@ -31,7 +31,7 @@
 </template>
 
 <script>
-
+import { loginpost } from '../network/login'
 export default {
   name: "login",
   data () {
@@ -66,23 +66,12 @@ export default {
       this.$refs.elfrom.validate(async valid => {
         if (!valid) return;
         else {
-          const { data: res } = await this.$http.post("login", this.loginfrom);
+          const res = await loginpost(this.loginfrom);
+          //console.log(res)
           if (res.meta.status !== 200) {
-            return this.$message({
-              message: '登录失败',
-              type: 'error',
-              center: true,
-              offset: 350,
-              duration: 1500,
-            })
+            return this.$message.error('登录失败')
           }
-          this.$message.success({
-            message: '登录成功',
-            type: 'success',
-            center: true,
-            offset: 350,
-            duration: 1500,
-          });
+          this.$message.success('登录成功')
           window.sessionStorage.setItem('token', res.data.token)
           this.$router.push('/home')
         }

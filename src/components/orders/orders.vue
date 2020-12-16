@@ -160,7 +160,7 @@ export default {
         ress: ''
       },
       changerules: {
-        address: [{ required: true, message: '请选择地区', trigger: 'blur', type: "array" }],
+        address: [{ required: true, message: '请选择地区', type: "array" }],
         ress: [{ required: true, message: '请填写地址', trigger: 'blur' }]
       },
       citydata,
