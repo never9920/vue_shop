@@ -30,6 +30,7 @@
 </template>
 
 <script>
+import { listgget } from '../../network/power'
 export default {
   name: "power",
   data () {
@@ -46,7 +47,7 @@ export default {
 
   methods: {
     async getpower () {
-      const { data: res } = await this.$http.get('rights/list')
+      const res = await listgget()
       if (res.meta.status !== 200) {
         return this.$messagge.error('获取权限失败');
       }

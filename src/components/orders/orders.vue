@@ -143,6 +143,7 @@
 <script>
 import _ from 'lodash'
 import citydata from './citydata'
+import { orderget, kuaidiget, ordersput, ordersgetid } from '../../network/orders'
 export default {
   name: "orders",
   data () {
@@ -201,7 +202,7 @@ export default {
   methods: {
     async getorders () {
       //console.log(this.orders)
-      const { data: res } = await this.$http.get(`orders`, { params: this.orders })
+      const res = await orderget(this.orders)
       if (res.meta.status !== 200) {
         return this.$message.error('获取订单列表失败');
       }
@@ -222,7 +223,7 @@ export default {
     },
     async showlocation (id) {
       this.locationvis = true
-      const { data: res } = await this.$http.get(`/kuaidi/` + id)
+      const res = await kuaidiget(id)
       if (res.meta.status !== 200) {
         return this.$message.error('获取物流信息失败')
       }
@@ -242,7 +243,7 @@ export default {
           form.pay_status = form.pay_status.join(),
             form.is_send = form.is_send.join()
         }
-        const { data: res } = await this.$http.put(`orders/` + form.order_id, form)
+        const res = await ordersput(form.order_id, form)
         if (res.meta.status !== 201) {
           return this.$message.error('修改订单信息失败')
         }
@@ -254,7 +255,7 @@ export default {
     },
     async showedit (id) {
       //console.log(id)
-      const { data: res } = await this.$http.get(`orders/` + id)
+      const res = await ordersgetid(id)
       if (res.meta.status !== 200) {
         return this.$message.error('获取订单信息失败')
       }

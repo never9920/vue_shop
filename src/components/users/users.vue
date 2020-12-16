@@ -174,7 +174,7 @@
 </template>
 
 <script>
-import { usersput } from '../../network/users'
+import { usersget, usersputstate, userspost, usersgetid, usersputid, usersdelete, rolesget, usersrolesput } from '../../network/users'
 export default {
   name: "users",
   data () {
@@ -253,9 +253,8 @@ export default {
 
   methods: {
     async getusers () {
-      const { data: res } = await this.$http.get('users', {
-        params: this.userslist
-      })
+      const res = await usersget(this.userslist)
+      //console.log(res)
       if (res.meta.status !== 200) {
         return this.$message.error('获取用户失败！')
       }
@@ -273,7 +272,8 @@ export default {
     },
     async userstatus (value) {
       //console.log(value)
-      const res = await usersput(value.id, value.mg_state)
+      const res = await usersputstate(value.id, value.mg_state)
+      //console.log(res)
       if (res.meta.status !== 200) {
         value.mg_state = !value.mg_state
         return this.$message.error('更新失败')
@@ -300,9 +300,10 @@ export default {
     adduser () {
       this.$refs.addref.validate(async valid => {
         if (!valid) return
-        const { data: res } = await this.$http.post('users', this.addform)
+        const res = await userspost(this.addform)
+        //console.log(res)
         if (res.meta.status !== 201) {
-          this.$message.error('添加失败')
+          return this.$message.error('添加失败')
         }
         this.$message.success('添加用户成功')
         this.dialogVisible = false
@@ -310,7 +311,8 @@ export default {
       })
     },
     async showmes (id) {
-      const { data: res } = await this.$http.get('users/' + id)
+      //console.log(usersgetid(id))
+      const res = await usersgetid(id)
       if (res.meta.status !== 200) {
         return this.$message.error('查询失败')
       }
@@ -324,10 +326,7 @@ export default {
     edituser () {
       this.$refs.editref.validate(async valid => {
         if (!valid) return this.$message.error('请填写需要修改的数据')
-        const { data: res } = await this.$http.put('users/' + this.editform.id, {
-          email: this.editform.email,
-          mobile: this.editform.mobile
-        })
+        const res = await usersputid(this.editform.id, this.editform)
         if (res.meta.status !== 200) {
           this.$message.error('修改失败')
         }
@@ -345,7 +344,7 @@ export default {
       if (confirmres !== 'confirm') {
         return this.$message.info('已取消删除')
       }
-      const { data: res } = await this.$http.delete('users/' + id)
+      const res = await usersdelete(id)
       if (res.meta.status !== 200) {
         return this.$message.error('删除失败')
       }
@@ -354,7 +353,7 @@ export default {
     },
     async distrib (roles) {
       this.roles = roles
-      const { data: res } = await this.$http.get('roles')
+      const res = await rolesget()
       if (res.meta.status != 200) {
         this.$message.error('获取角色列表失败')
       }
@@ -367,7 +366,7 @@ export default {
       if (!this.selectroles) {
         return this.$message.error('请选择要改的角色')
       }
-      const { data: res } = await this.$http.put(`users/${this.roles.id}/role`, { rid: this.selectroles })
+      const res = await usersrolesput(this.roles.id, { rid: this.selectroles })
       //console.log(res)
       if (res.meta.status !== 200) {
         return this.$message.error('更新角色失败')

@@ -117,6 +117,7 @@
 </template>
 
 <script>
+import { categoriesget, goodget, goodssdelete, goodgetid, goodsputid } from '../../network/shop'
 import _ from 'lodash'
 export default {
   name: "goods",
@@ -158,7 +159,7 @@ export default {
 
   methods: {
     async showcategories () {
-      const { data: res } = await this.$http.get('categories')
+      const res = await categoriesget()
       if (res.meta.status !== 200) {
         return this.$message.error('获取商品数据失败')
       }
@@ -166,7 +167,7 @@ export default {
       //console.log(this.cartlist)
     },
     async getgoods () {
-      const { data: res } = await this.$http.get(`goods`, { params: this.goodslist })
+      const res = await goodget(this.goodslist)
       if (res.meta.status !== 200) {
         return this.$message.error('获取商品列表失败')
       }
@@ -192,7 +193,7 @@ export default {
       if (confirmres !== 'confirm') {
         return this.$message.info('已取消删除')
       }
-      const { data: res } = await this.$http.delete(`goods/${id}`)
+      const res = await goodssdelete(id)
       if (res.meta.status !== 200) {
         return this.$message.error('删除失败')
       }
@@ -200,7 +201,7 @@ export default {
       this.getgoods()
     },
     async showmes (id) {
-      const { data: res } = await this.$http.get(`goods/` + id)
+      const res = await goodgetid(id)
       if (res.meta.status !== 200) {
         return this.$message.error('查询失败')
       }
@@ -241,7 +242,7 @@ export default {
         const form = _.cloneDeep(this.editform)
         form.goods_cat = form.goods_cat.join(',')
         //console.log(form)
-        const { data: res } = await this.$http.put(`goods/` + form.goods_id, form)
+        const res = await goodsputid(form.goods_id, form)
         if (res.meta.status !== 200) {
           return this.$message.error('修改商品信息失败')
         }

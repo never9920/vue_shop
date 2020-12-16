@@ -208,6 +208,7 @@
 </template>
 
 <script>
+import { categoriesget, categoriesgetid, categoriespostid, categoriesputiid, categoriesgetiid, categoriesdeleteiid } from '../../network/shop'
 export default {
   name: "params",
   data () {
@@ -266,7 +267,7 @@ export default {
 
   methods: {
     async getparams () {
-      const { data: res } = await this.$http.get('categories')
+      const res = await categoriesget()
       if (res.meta.status !== 200) {
         return this.$message.error('获取商品分类失败')
       }
@@ -289,7 +290,7 @@ export default {
         this.showonlytag = []
         return
       }
-      const { data: res } = await this.$http.get(`categories/${this.cateid}/attributes`, { params: { sel: this.activeName } })
+      const res = await categoriesgetid(this.cateid, { sel: this.activeName })
       if (res.meta.status !== 200) {
         return this.$message.error('加载数据失败')
       }
@@ -316,7 +317,7 @@ export default {
     addparams () {
       this.$refs.addref.validate(async valid => {
         if (!valid) return
-        const { data: res } = await this.$http.post(`categories/${this.cateid}/attributes`, {
+        const res = await categoriespostid(this.cateid, {
           attr_name: this.addform.attr_name,
           attr_sel: this.activeName
         })
@@ -331,7 +332,7 @@ export default {
     editparams () {
       this.$refs.editref.validate(async valid => {
         if (!valid) return
-        const { data: res } = await this.$http.put(`categories/${this.cateid}/attributes/${this.editform.attr_id}`, {
+        const res = await categoriesputiid(this.cateid, this.editform.attr_id, {
           attr_name: this.editform.attr_name,
           attr_sel: this.activeName
         })
@@ -347,7 +348,7 @@ export default {
       this.$refs.editref.resetFields()
     },
     async showedit (id) {
-      const { data: res } = await this.$http.get(`categories/${this.cateid}/attributes/${id}`, { params: { id: this.activeName } })
+      const res = await tcategoriesgetiid(this.cateid, id, { id: this.activeName })
       if (res.meta.status !== 200) {
         this.$message.error('添加参数失败')
       }
@@ -363,7 +364,7 @@ export default {
       if (confirmres !== 'confirm') {
         return this.$message.info('已取消删除')
       }
-      const { data: res } = await this.$http.delete(`categories/${this.cateid}/attributes/${id}`)
+      const res = await categoriesdeleteiid(this.cateid, id)
       if (res.meta.status !== 200) {
         return this.$message.error('删除失败')
       }
@@ -393,7 +394,7 @@ export default {
       this.edittag(item)
     },
     async edittag (item) {
-      const { data: res } = await this.$http.put(`categories/${this.cateid}/attributes/${item.attr_id}`, {
+      const res = await categoriesputiid(this.cateid, item.attr_id, {
         attr_name: item.attr_name,
         attr_sel: item.attr_sel,
         attr_vals: item.attr_vals.join(' ')

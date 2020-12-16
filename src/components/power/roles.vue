@@ -165,6 +165,7 @@
 </template>
 
 <script>
+import { rolesget, rolesdelete, treeget, rolespostid, rolespost, rolesgetid, rolesputid, rolesdeleteid } from '../../network/power'
 export default {
   name: "roles",
   data () {
@@ -199,7 +200,7 @@ export default {
 
   methods: {
     async getroles () {
-      const { data: res } = await this.$http.get('roles')
+      const res = await rolesget()
       if (res.meta.status !== 200) {
         return this.$messagge.error('获取角色失败');
       }
@@ -216,7 +217,7 @@ export default {
         return this.$message.info('已取消删除')
       }
       //console.log(role, id)
-      const { data: res } = await this.$http.delete(`roles/${role.id}/rights/${id}`)
+      const res = await rolesdelete(role.id, id)
       //console.log(res)
       if (res.meta.status !== 200) {
         return this.$message.error('删除权限失败')
@@ -227,7 +228,7 @@ export default {
     async showrights (role) {
       this.roleid = role.id
       //console.log(role)
-      const { data: res } = await this.$http.get('rights/tree')
+      const res = await treeget()
       //console.log(res)
       if (res.meta.status !== 200) {
         return this.$messagge.error('获取权限失败');
@@ -256,7 +257,7 @@ export default {
       ]
       //console.log(keys)
       const idstr = keys.join(',')
-      const { data: res } = await this.$http.post(`roles/${this.roleid}/rights`, { rids: idstr })
+      const res = await rolespostid(this.roleid, { rids: idstr })
       if (res.meta.status !== 200) {
         return this.$messagge.error('更改失败');
       }
@@ -270,7 +271,7 @@ export default {
       this.rolesform.roleDesc = ''
     },
     /*async checkroles () {
-      const { data: res } = await this.$http.post(`roles`, this.rolesform)
+      const res = await this.$http.post(`roles`, this.rolesform)
       if (res.meta.status !== 201) {
         return this.$message.error('添加角色失败')
       }
@@ -281,7 +282,7 @@ export default {
     checkroles () {
       this.$refs.roleref.validate(async valid => {
         if (!valid) return
-        const { data: res } = await this.$http.post(`roles`, this.rolesform)
+        const res = await rolespost(this.rolesform)
         if (res.meta.status !== 201) {
           this.$message.error('添加失败')
         }
@@ -293,7 +294,7 @@ export default {
     async editroles (item) {
       //this.editrolevis = true
       this.roleid = item.id
-      const { data: res } = await this.$http.get('roles/' + this.roleid)
+      const res = await rolesgetid(this.roleid)
       //console.log(res)
       if (res.meta.status !== 200) {
         return this.$message.error('获取角色失败');
@@ -310,11 +311,11 @@ export default {
       this.$refs.editrolesref.validate(async valid => {
         if (!valid) return
         //console.log(this.rolesdata)
-        const { data: res } = await this.$http.put('roles/' + this.rolesdata.roleId, {
+        const res = await rolesputid(this.rolesdata.roleId, {
           roleName: this.rolesdata.roleName,
           roleDesc: this.rolesdata.roleDesc
         })
-        //console.log(res)
+        console.log(res)
         if (res.meta.status !== 200) {
           return this.$message.error('修改角色失败');
         }
@@ -333,7 +334,7 @@ export default {
       if (confirmres !== 'confirm') {
         return this.$message.info('已取消删除')
       }
-      const { data: res } = await this.$http.delete('roles/' + item.id)
+      const res = await rolesdeleteid(item.id)
       if (res.meta.status !== 200) {
         return this.$message.error('删除角色失败');
       }

@@ -4,8 +4,32 @@ export function usersget(params) {
     return get("users", params)
 }
 
-export function usersput(id, state) {
+export function usersputstate(id, state) {
     return put("users/" + id + "/state/" + state)
+}
+
+export function userspost(params) {
+    return post("users", params)
+}
+
+export function usersgetid(id) {
+    return get("users/" + id)
+}
+
+export function usersputid(id, params) {
+    return put("users/" + id, params)
+}
+
+export function usersdelete(id) {
+    return deleteid("users/" + id)
+}
+
+export function rolesget() {
+    return get("roles")
+}
+
+export function usersrolesput(id, params) {
+    return put("users/" + id + "/role", params)
 }
 
 /*this.$http.get('users', {

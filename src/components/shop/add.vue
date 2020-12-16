@@ -121,6 +121,7 @@
 </template>
 
 <script>
+import { categoriesget, categoriesgetid, goodspost } from '../../network/shop'
 import _ from 'lodash'
 export default {
   name: "add",
@@ -176,7 +177,7 @@ export default {
 
   methods: {
     async showcategories () {
-      const { data: res } = await this.$http.get('categories')
+      const res = await categoriesget()
       if (res.meta.status !== 200) {
         return this.$message.error('获取商品数据失败')
       }
@@ -206,9 +207,7 @@ export default {
       //console.log(this.page)
       if (this.page === '1') {
         //console.log(aaa)
-        const { data: res } = await this.$http.get(`categories/${this.cateid}/attributes`, {
-          params: { sel: 'many' }
-        })
+        const res = await categoriesgetid(this.cateid, { sel: 'many' })
         if (res.meta.status !== 200) {
           return this.$message.error('获取参数失败')
         }
@@ -221,9 +220,7 @@ export default {
         //console.log(typeof (this.manytabs[0].attr_vals))
       } else if (this.page === '2') {
         //console.log(aaa)
-        const { data: res } = await this.$http.get(`categories/${this.cateid}/attributes`, {
-          params: { sel: 'only' }
-        })
+        const res = await categoriesgetid(this.cateid, { sel: 'only' })
         if (res.meta.status !== 200) {
           return this.$message.error('获取参数失败')
         }
@@ -264,7 +261,8 @@ export default {
         })
         /*form.goods_introduce = form.goods_introduce.Substring(0, form.goods_introduce.Length - 4)*/
         console.log(form)
-        const { data: res } = await this.$http.post(`goods`, form)
+        const res = await goodspost(form)
+        console.log(res)
         if (res.meta.status !== 201) {
           return this.$message.error('提交失败')
         }

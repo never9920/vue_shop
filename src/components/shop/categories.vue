@@ -133,6 +133,7 @@
 </template>
 
 <script>
+import { categoriesgetparams, categoriespost, categoriesget_id, categoriesputid, categoriesdelete } from '../../network/shop'
 export default {
   name: "categories",
   data () {
@@ -199,7 +200,7 @@ export default {
 
   methods: {
     async getcategories () {
-      const { data: res } = await this.$http.get('categories', { params: this.queryinfo })
+      const res = await categoriesgetparams(this.queryinfo)
       if (res.meta.status !== 200) {
         return this.$message.error('获取商品数据失败')
       }
@@ -224,7 +225,7 @@ export default {
       //this.addcart = false
       this.$refs.addcartref.validate(async valid => {
         if (!valid) return
-        const { data: res } = await this.$http.post('categories', this.addcartform)
+        const res = await categoriespost(this.addcartform)
         if (res.meta.status !== 201) {
           return this.$message.error('添加分类失败')
         }
@@ -240,7 +241,7 @@ export default {
       this.addlist = []
     },
     async getcartlist () {
-      const { data: res } = await this.$http.get('categories', { params: { type: 2 } })
+      const res = await categoriesgetparams({ type: 2 })
       if (res.meta.status !== 200) {
         return this.$message.error('获取父级数据失败')
       }
@@ -263,7 +264,7 @@ export default {
     async editcate (item) {
       //this.editcart = true
       //console.log(item)
-      const { data: res } = await this.$http.get(`categories/` + item.cat_id)
+      const res = await categoriesget_id(item.cat_id)
       if (res.meta.status !== 200) {
         return this.$message.error('获取分类名称失败')
       }
@@ -273,7 +274,7 @@ export default {
     editcartlist () {
       this.$refs.editcartref.validate(async valid => {
         if (!valid) return
-        const { data: res } = await this.$http.put(`categories/` + this.editcartform.cat_id, this.editcartform)
+        const res = await categoriesputid(this.editcartform.cat_id, this.editcartform)
         if (res.meta.status !== 200) {
           return this.$message.error('修改分类名称失败')
         }
@@ -291,7 +292,7 @@ export default {
       if (confirmres !== 'confirm') {
         return this.$message.info('已取消删除')
       }
-      const { data: res } = await this.$http.delete('categories/' + item.cat_id)
+      const res = await categoriesdelete(item.cat_id)
       if (res.meta.status !== 200) {
         return this.$message.error('删除分类失败');
       }

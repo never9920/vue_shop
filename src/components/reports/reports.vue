@@ -14,6 +14,7 @@
 <script>
 //import echarts from 'echarts'
 import _ from 'lodash'
+import { reportsget } from '../../network/report'
 export default {
   name: "reports",
   data () {
@@ -51,7 +52,7 @@ export default {
     };
   },
   async mounted () {
-    const { data: res } = await this.$http.get(`reports/type/1`)
+    const res = await reportsget()
     if (res.meta.status !== 200) {
       return this.$message.error('获取报表数据失败')
     }
