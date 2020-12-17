@@ -260,9 +260,9 @@ export default {
           form.attrs.push(newonly)
         })
         /*form.goods_introduce = form.goods_introduce.Substring(0, form.goods_introduce.Length - 4)*/
-        console.log(form)
+        //console.log(form)
         const res = await goodspost(form)
-        console.log(res)
+        //console.log(res)
         if (res.meta.status !== 201) {
           return this.$message.error('提交失败')
         }

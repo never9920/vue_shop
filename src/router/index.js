@@ -3,29 +3,29 @@ import VueRouter from 'vue-router'
 
 
 const login = () =>
-    import ('../components/login')
+    import ('../views/login')
 const home = () =>
-    import ('../components/home')
+    import ('../views/home')
 const welcome = () =>
-    import ('../components/welcome')
+    import ('../views/welcome')
 const users = () =>
-    import ('../components/users/users')
+    import ('../views/users/users')
 const power = () =>
-    import ('../components/power/power')
+    import ('../views/power/power')
 const roles = () =>
-    import ('../components/power/roles')
+    import ('../views/power/roles')
 const goods = () =>
-    import ('../components/shop/goods')
+    import ('../views/shop/goods')
 const params = () =>
-    import ('../components/shop/params')
+    import ('../views/shop/params')
 const categories = () =>
-    import ('../components/shop/categories')
+    import ('../views/shop/categories')
 const add = () =>
-    import ('../components/shop/add')
+    import ('../views/shop/add')
 const orders = () =>
-    import ('../components/orders/orders')
+    import ('../views/orders/orders')
 const reports = () =>
-    import ('../components/reports/reports')
+    import ('../views/reports/reports')
 
 Vue.use(VueRouter)
 

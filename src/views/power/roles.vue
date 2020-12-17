@@ -315,7 +315,7 @@ export default {
           roleName: this.rolesdata.roleName,
           roleDesc: this.rolesdata.roleDesc
         })
-        console.log(res)
+        //console.log(res)
         if (res.meta.status !== 200) {
           return this.$message.error('修改角色失败');
         }

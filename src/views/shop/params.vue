@@ -348,7 +348,7 @@ export default {
       this.$refs.editref.resetFields()
     },
     async showedit (id) {
-      const res = await tcategoriesgetiid(this.cateid, id, { id: this.activeName })
+      const res = await categoriesgetiid(this.cateid, id, { id: this.activeName })
       if (res.meta.status !== 200) {
         this.$message.error('添加参数失败')
       }

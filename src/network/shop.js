@@ -11,7 +11,7 @@ export function categoriesgetid(id, params) {
 }
 
 export function goodspost(params) {
-    return post("goods")
+    return post("goods", params)
 }
 
 //categories
