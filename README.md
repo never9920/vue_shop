@@ -4,6 +4,8 @@
 
 ### 登录页面
 
+![Image text](https://github.com/never9920/vue_shop/blob/main/src/assets/12.png)
+
 <img src="https://github.com/never9920/vue_shop/blob/main/src/assets/1.png">
 
 ### 用户管理
